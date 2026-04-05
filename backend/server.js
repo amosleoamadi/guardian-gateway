@@ -43,9 +43,6 @@ app.use(
   }),
 );
 
-// Handle preflight requests
-app.options("*", cors());
-
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
