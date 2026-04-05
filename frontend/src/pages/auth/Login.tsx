@@ -9,9 +9,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // API URL - make it configurable
+  const API_BASE_URL = "https://guardian-gateway-backend.onrender.com";
+
   // Validation function
   const validateInputs = () => {
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim()) {
       setError("Email is required");
@@ -22,7 +24,6 @@ const Login = () => {
       return false;
     }
 
-    // Matric number validation (adjust regex based on your format)
     if (!matricNo.trim()) {
       setError("Matric number is required");
       return false;
@@ -39,7 +40,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate inputs before making API call
     if (!validateInputs()) {
       return;
     }
@@ -48,32 +48,39 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        "https://merry-unhilarious-castiel.ngrok-free.dev/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-            matricNo: matricNo.trim(),
-          }),
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add these headers if needed
+          Accept: "application/json",
         },
-      );
+        mode: "cors", // Explicitly set CORS mode
+        credentials: "omit", // Change to "include" if you need cookies
+        body: JSON.stringify({
+          email: email.trim(),
+          matricNo: matricNo.trim(),
+        }),
+      });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Navigate to OTP page with email
         navigate("/verify-otp", { state: { email: email.trim() } });
       } else {
-        // Handle specific error messages from backend
         setError(data.message || "Invalid credentials. Please try again.");
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError("Server connection failed. Is your backend running?");
+      if (err.message === "Failed to fetch") {
+        setError(
+          "Cannot connect to server. Please check if the backend is running and ngrok is active.",
+        );
+      } else if (err.message.includes("CORS")) {
+        setError("CORS error: Please check backend CORS configuration.");
+      } else {
+        setError("Server connection failed. Is your backend running?");
+      }
     } finally {
       setLoading(false);
     }
@@ -82,7 +89,6 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full">
-        {/* Form with box shadow */}
         <form
           onSubmit={handleSubmit}
           className="mt-6 space-y-6 bg-white p-8 rounded-xl shadow-2xl"
@@ -117,7 +123,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="bg-red-50 border border-red-500 text-red-700 px-4 py-3 rounded-lg">
                 <p className="text-sm">{error}</p>

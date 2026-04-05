@@ -11,11 +11,40 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+// ==================== UPDATED CORS FOR RENDER ====================
+// Allow multiple origins (your frontend will be added after deployment)
+const allowedOrigins = [
+  "https://guardian-gateway-backend.onrender.com", // Your frontend URL (UPDATE AFTER FRONTEND DEPLOY)
+  "http://localhost:3000", // React local development
+  "http://localhost:5173", // Vite local development
+  "http://localhost:5000", // Local backend
+].filter(Boolean); // Remove undefined values
+
 app.use(
   cors({
-    origin: "https://merry-unhilarious-castiel.ngrok-free.dev",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log(`Blocked origin: ${origin}`);
+        callback(
+          new Error(`CORS policy does not allow access from ${origin}`),
+          false,
+        );
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
   }),
 );
+
+// Handle preflight requests
+app.options("*", cors());
 
 // MongoDB Connection
 mongoose
@@ -32,10 +61,33 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// ==================== ROUTES ====================
+
+// Test route
+app.get("/", (req, res) => {
+  res.json({
+    message: "ESTAM Backend API is running!",
+    status: "active",
+    timestamp: new Date().toISOString(),
+    cors_enabled_for: allowedOrigins,
+  });
+});
+
+// Test CORS route
+app.get("/test-cors", (req, res) => {
+  res.json({ message: "CORS is working!" });
+});
+
 // LOGIN ROUTE (SEND OTP)
 app.post("/login", async (req, res) => {
   try {
     const { email, matricNo } = req.body;
+
+    if (!email || !matricNo) {
+      return res
+        .status(400)
+        .json({ message: "Email and Matric Number are required" });
+    }
 
     const student = await Student.findOne({
       email: email.trim(),
@@ -77,6 +129,10 @@ app.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
 
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
     const student = await Student.findOne({
       email: email.trim(),
       otp: otp.trim(),
@@ -86,11 +142,11 @@ app.post("/verify-otp", async (req, res) => {
       return res.status(401).json({ message: "Invalid OTP" });
     }
 
-    // Clear OTP after successful verification
     student.otp = null;
     await student.save();
 
     res.json({
+      success: true,
       message: "Login successful",
       email: student.email,
       matricNo: student.matricNo,
@@ -106,6 +162,10 @@ app.post("/verify-otp", async (req, res) => {
 app.post("/resend-otp", async (req, res) => {
   try {
     const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
 
     const student = await Student.findOne({ email: email.trim() });
 
@@ -148,4 +208,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`✅ CORS enabled for:`, allowedOrigins);
 });

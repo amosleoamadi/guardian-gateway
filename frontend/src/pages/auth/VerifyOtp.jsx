@@ -67,7 +67,7 @@ const VerifyOtp = () => {
 
     try {
       const response = await fetch(
-        "https://merry-unhilarious-castiel.ngrok-free.dev/verify-otp",
+        "https://guardian-gateway-backend.onrender.com/verify-otp",
         {
           method: "POST",
           headers: {
