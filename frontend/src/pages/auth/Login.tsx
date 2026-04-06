@@ -49,31 +49,29 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await axios.post(
-        "https://guardian-gateway-backend.onrender.com/login",
-        {
-          email,
-          matricNo,
-        },
-      );
+      const response = await axios.post(`${API_BASE_URL}/login`, {
+        email,
+        matricNo,
+      });
 
       const data = response;
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         navigate("/verify-otp", { state: { email: email.trim() } });
       } else {
         setError(data.data.message || "Invalid credentials. Please try again.");
       }
     } catch (err: any) {
       console.error("Login error:", err);
-      if (err.message === "Failed to fetch") {
-        setError(
-          "Cannot connect to server. Please check if the backend is running and ngrok is active.",
-        );
-      } else if (err.message.includes("CORS")) {
-        setError("CORS error: Please check backend CORS configuration.");
+
+      if (err.response) {
+        // Backend responded with error
+        setError(err.response.data.message || "Something went wrong");
+      } else if (err.request) {
+        // Request sent but no response
+        setError("No response from server. Check backend.");
       } else {
-        setError("Server connection failed. Is your backend running?");
+        setError("Request error. Please try again.");
       }
     } finally {
       setLoading(false);
