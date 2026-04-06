@@ -123,7 +123,10 @@ app.post("/login", async (req, res) => {
     res.json({ success: true, message: "OTP sent!", email: student.email });
   } catch (error) {
     console.error("❌ EMAIL FAILED:", error);
-    throw new Error("Email sending failed: " + error.message);
+    res.status(500).json({
+      message: "Error sending OTP",
+      error: error.message,
+    });
   }
 });
 
