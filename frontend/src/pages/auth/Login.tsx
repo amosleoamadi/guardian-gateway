@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import logo from "../../assets/logo.jpeg";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -48,29 +49,22 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Add these headers if needed
-          Accept: "application/json",
+      const response = await axios.post(
+        "https://guardian-gateway-backend.onrender.com/login",
+        {
+          email,
+          matricNo,
         },
-        mode: "cors", // Explicitly set CORS mode
-        credentials: "omit", // Change to "include" if you need cookies
-        body: JSON.stringify({
-          email: email.trim(),
-          matricNo: matricNo.trim(),
-        }),
-      });
+      );
 
-      const data = await response.json();
+      const data = response;
 
-      if (response.ok) {
+      if (response.status === 201) {
         navigate("/verify-otp", { state: { email: email.trim() } });
       } else {
-        setError(data.message || "Invalid credentials. Please try again.");
+        setError(data.data.message || "Invalid credentials. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login error:", err);
       if (err.message === "Failed to fetch") {
         setError(

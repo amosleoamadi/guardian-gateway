@@ -15,10 +15,11 @@ app.use(express.json());
 // ==================== UPDATED CORS FOR RENDER ====================
 // Allow multiple origins (your frontend will be added after deployment)
 const allowedOrigins = [
-  "https://guardian-gateway-backend.onrender.com", // Your frontend URL (UPDATE AFTER FRONTEND DEPLOY)
+  "guardian-gateway-roan.vercel.app", // Your frontend URL (UPDATE AFTER FRONTEND DEPLOY)
   "http://localhost:3000", // React local development
   "http://localhost:5173", // Vite local development
   "http://localhost:5000", // Local backend
+  "http://localhost:5174/",
 ].filter(Boolean); // Remove undefined values
 
 app.use(
