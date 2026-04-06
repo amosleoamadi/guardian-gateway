@@ -47,11 +47,21 @@ mongoose
 
 // Email Transporter
 const transporter = nodemailer.createTransport({
-  service: "smtp.gmail.com",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ SMTP ERROR:", error);
+  } else {
+    console.log("✅ SMTP Ready");
+  }
 });
 
 // ==================== ROUTES ====================
@@ -112,8 +122,8 @@ app.post("/login", async (req, res) => {
 
     res.json({ success: true, message: "OTP sent!", email: student.email });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error sending OTP" });
+    console.error("❌ EMAIL FAILED:", error);
+    throw new Error("Email sending failed: " + error.message);
   }
 });
 
