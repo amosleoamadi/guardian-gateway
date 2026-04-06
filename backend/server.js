@@ -32,7 +32,7 @@ app.use(
 );
 
 // VERY IMPORTANT 👇
-app.options("/*", cors());
+app.use(cors());
 
 // MongoDB Connection
 mongoose
