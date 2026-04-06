@@ -20,7 +20,7 @@ const allowedOrigins = [
   "http://localhost:5173", // Vite local development
   "http://localhost:5000", // Local backend
   "http://localhost:5174/",
-].filter(Boolean); // Remove undefined values
+].filter(Boolean);
 
 app.use(
   cors({
