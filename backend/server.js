@@ -188,7 +188,10 @@ app.post("/resend-otp", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error resending OTP" });
+    res.status(500).json({
+      message: "Error sending OTP",
+      error: error.message, // expose real issue
+    });
   }
 });
 
