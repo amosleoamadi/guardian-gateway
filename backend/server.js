@@ -103,7 +103,9 @@ app.post("/login", async (req, res) => {
     student.otp = generatedOtp;
     await student.save();
 
-    await transporter.sendMail({
+    res.json({ success: true, message: "OTP sent!", email: student.email });
+
+    transporter.sendMail({
       from: `"ESTAM Portal" <${process.env.EMAIL_USER}>`,
       to: student.email,
       subject: "Your OTP Code",
@@ -116,8 +118,6 @@ app.post("/login", async (req, res) => {
         </div>
       `,
     });
-
-    res.json({ success: true, message: "OTP sent!", email: student.email });
   } catch (error) {
     console.error("❌ EMAIL FAILED:", error);
     res.status(500).json({
