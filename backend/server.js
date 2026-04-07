@@ -44,15 +44,13 @@ mongoose
 
 // Email Transporter
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp-relay.brevo.com",
   port: 587,
   secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
 });
 
 transporter.verify((error, success) => {
@@ -106,7 +104,7 @@ app.post("/login", async (req, res) => {
     await student.save();
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"ESTAM Portal" <${process.env.EMAIL_USER}>`,
       to: student.email,
       subject: "Your OTP Code",
       html: `
