@@ -36,9 +36,6 @@ app.use(
   }),
 );
 
-// VERY IMPORTANT 👇
-app.use(cors());
-
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
