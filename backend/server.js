@@ -51,6 +51,46 @@ app.get("/", (req, res) => {
   });
 });
 
+// GET STUDENT BY ID
+app.get("/api/student/me", async (req, res) => {
+  try {
+    // Option 1: Pass as query parameter
+    const { matricNo } = req.query;
+
+    if (!matricNo) {
+      return res.status(400).json({
+        message: "Either email or matricNo is required",
+      });
+    }
+
+    // Build query object
+    const query = {};
+    if (matricNo) query.matricNo = matricNo.trim();
+
+    const student = await Student.findOne(query);
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Remove sensitive data (like OTP) before sending
+    const studentData = student.toObject();
+    delete studentData.otp;
+    delete studentData.__v;
+
+    res.json({
+      success: true,
+      student: studentData,
+    });
+  } catch (error) {
+    console.error("❌ GET STUDENT ERROR:", error);
+    res.status(500).json({
+      message: "Error fetching student data",
+      error: error.message,
+    });
+  }
+});
+
 // LOGIN ROUTE (SEND OTP)
 app.post("/login", async (req, res) => {
   try {
