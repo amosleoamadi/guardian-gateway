@@ -1,11 +1,14 @@
 import React from "react";
 
 const Profile = () => {
+  const useName = localStorage.getItem("userName");
+  const useEmail = localStorage.getItem("userEmail");
+  const useMatric = localStorage.getItem("userMatric");
   // Static student data for layout
   const student = {
-    name: "John Doe",
-    matricNo: "ESTAM/2026/001",
-    email: "john.doe@estam.edu",
+    name: useName,
+    matricNo: useMatric,
+    email: useEmail,
     department: "Computer Science",
     level: "400 Level",
     status: "Verified Student",

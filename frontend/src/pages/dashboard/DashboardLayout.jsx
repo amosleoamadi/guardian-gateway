@@ -4,6 +4,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const userName = localStorage.getItem("userName");
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: "📊" },
@@ -59,7 +60,7 @@ const DashboardLayout = () => {
         <header className="bg-white shadow-sm px-8 py-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              Welcome back, John Doe
+              Welcome back, {userName}
             </h1>
             <p className="text-gray-500 text-sm mt-1">
               Academic Session: 2025/2026

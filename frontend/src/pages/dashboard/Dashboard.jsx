@@ -1,6 +1,7 @@
 import React from "react";
 
 const DashboardHome = () => {
+  const matric = localStorage.getItem("userMatric");
   return (
     <>
       {/* Statistics Cards */}
@@ -9,7 +10,7 @@ const DashboardHome = () => {
           <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
             Matric Number
           </h3>
-          <p className="text-2xl font-bold text-gray-800 mt-2">2024/CS/001</p>
+          <p className="text-2xl font-bold text-gray-800 mt-2">{matric}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6 border-l-4 border-orange-600">
